@@ -20,6 +20,8 @@ import { pathSetup, readUserLoginShell } from "@t3tools/shared/shell";
 import * as DesktopCliShim from "./DesktopCliShim.ts";
 import * as DesktopEnvironment from "./DesktopEnvironment.ts";
 import { makeComponentLogger } from "./DesktopObservability.ts";
+import { PM_DESKTOP_IDENTITY as PM, pmDesktop } from "@t3tools/pm/identity"; // t3code-pm:
+const CLI = pmDesktop(PM.cliName, "t3"); // t3code-pm:
 
 const { logInfo, logWarning } = makeComponentLogger("desktop-cli-command");
 
@@ -172,7 +174,7 @@ export const make = Effect.gen(function* () {
 
   const firstOnPath = Effect.gen(function* () {
     for (const directory of pathEntries(env.PATH, ":")) {
-      const candidate = path.join(directory, "t3");
+      const candidate = path.join(directory, CLI); // t3code-pm:
       if (yield* isExecutableFile(candidate)) return Option.some(candidate);
     }
     return Option.none<string>();
@@ -201,7 +203,7 @@ export const make = Effect.gen(function* () {
         : Option.none<string>();
     }
     for (const directory of knownLocations(environment.homeDirectory, environment.platform)) {
-      const link = path.join(directory, "t3");
+      const link = path.join(directory, CLI); // t3code-pm:
       if (yield* isOurLink(link)) return Option.some(link);
     }
     return Option.none<string>();
@@ -332,7 +334,7 @@ export const make = Effect.gen(function* () {
       ...candidates.filter((candidate) => onPath.includes(candidate)),
       ...candidates.filter((candidate) => !onPath.includes(candidate)),
     ])) {
-      const link = path.join(directory, "t3");
+      const link = path.join(directory, CLI); // t3code-pm:
       const created = (yield* exists(directory))
         ? yield* writableDirectory(directory)
         : yield* fs.makeDirectory(directory, { recursive: true }).pipe(
@@ -382,7 +384,7 @@ export const make = Effect.gen(function* () {
       return yield* state;
     }
     for (const directory of knownLocations(environment.homeDirectory, environment.platform)) {
-      const link = path.join(directory, "t3");
+      const link = path.join(directory, CLI); // t3code-pm:
       if (yield* isOurLink(link)) {
         yield* fs.remove(link).pipe(Effect.mapError(() => fail(`Could not remove ${link}.`)));
       }
@@ -437,7 +439,8 @@ export const make = Effect.gen(function* () {
       // A t3 that is not ours in these folders, even off PATH, means the user has one already. On
       // Windows the app never writes there, so any t3 there is someone else's.
       for (const directory of userCandidates(environment.homeDirectory)) {
-        for (const name of windows ? ["t3.cmd", "t3.exe"] : ["t3"]) {
+        for (const name of windows ? [`${CLI}.cmd`, `${CLI}.exe`] : [CLI]) {
+          // t3code-pm:
           const other = path.join(directory, name);
           const present =
             (yield* exists(other)) || Option.isSome(yield* fs.readLink(other).pipe(Effect.option));

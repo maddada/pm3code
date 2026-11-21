@@ -11,10 +11,11 @@ import * as Schema from "effect/Schema";
 import * as Scope from "effect/Scope";
 
 import * as Electron from "electron";
+import { PM_DESKTOP_IDENTITY as PM, pmDesktop } from "@t3tools/pm/identity"; // t3code-pm:
 
 export const DESKTOP_HOST = "app";
-const DESKTOP_PRODUCTION_SCHEME = "t3code";
-const DESKTOP_DEVELOPMENT_SCHEME = "t3code-dev";
+const DESKTOP_PRODUCTION_SCHEME = pmDesktop(PM.scheme, "t3code"); // t3code-pm:
+const DESKTOP_DEVELOPMENT_SCHEME = pmDesktop(PM.devScheme, "t3code-dev"); // t3code-pm:
 
 export function getDesktopScheme(isDevelopment: boolean): string {
   return isDevelopment ? DESKTOP_DEVELOPMENT_SCHEME : DESKTOP_PRODUCTION_SCHEME;

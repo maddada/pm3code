@@ -43,7 +43,7 @@ OpenCode, Pi, Muse and the ACP family). Workers can use any provider.
 ```sh
 vp i
 vp run dev                      # server + web, state in this checkout's .t3 when it is a worktree
-vp run dist:desktop:dmg:arm64   # unsigned macOS desktop app (right-click, Open the first time)
+vp run dist:desktop:dmg:arm64   # "T3 Code PM" for Apple Silicon, ad-hoc signed (see below)
 ```
 
 A plain clone shares `~/.t3/dev` in dev mode; isolate it with
@@ -52,6 +52,23 @@ The free `Replay (dev)` provider has a `pm` scenario that drives the real `pm_*`
 
 To try the fork on your real data, quit the official app and copy
 `~/.t3/userdata/statev2.sqlite` into `~/.t3-pm/userdata/`.
+
+## Trying the desktop app (macOS)
+
+`vp run dist:desktop:dmg:arm64` builds `release/T3-Code-PM-<version>-arm64.dmg`. The app is
+**T3 Code PM** (`com.t3codepm.desktop`, URL scheme `t3code-pm`, command `t3-pm`), keeps its data
+in `~/.t3-pm` and its Electron profile in `~/Library/Application Support/t3code-pm`, and runs
+beside the official T3 Code. It has no update feed, and its server never updates itself from npm.
+
+It is ad-hoc signed, not notarized, so macOS blocks the first open of a downloaded copy. Drag it to
+Applications, then either right-click it and choose Open, or allow it in System Settings, Privacy &
+Security ("Open Anyway"), or run `xattr -dr com.apple.quarantine "/Applications/T3 Code PM.app"`.
+Each new build has a new ad-hoc signature, so macOS asks once more for its keychain item
+("t3code-pm Safe Storage") after an update: choose Always Allow. The first PM's setup turn runs on Claude
+Opus at high effort; each later PM starts on the model the previous one started with. Change a
+PM's model in its composer for its next turns.
+
+The resource monitor needs Rust 1.95 or newer when building.
 
 ## Trying the Android app
 
@@ -95,11 +112,12 @@ signed with the same key. Never commit it.
 scripts/sync-upstream.sh
 ```
 
-It fetches upstream's `main` (the `upstream` remote, else `origin`), keeps the old tip as
-`pm-before-sync-<date>`, rebases, and then runs the PM tests, the typecheck of the packages PM
-touches and both translation checks. On a conflict it lists the files and which of them hold
-`t3code-pm:` hunks. Every edit to an upstream file is a one-line mount or call marked
-`// t3code-pm:`, so conflicts stay small: keep upstream's change and put the marked line back.
+It fetches `main` from the remote that points at pingdotgg/t3code (or `UPSTREAM_REMOTE`), keeps
+the old tip as `<branch>-before-sync-<date>`, rebases, rebuilds `pnpm-lock.yaml` from upstream's,
+and runs `vp run check:changed` against upstream plus the PM translation and mobile import checks.
+On a conflict it lists the files and which of them hold `t3code-pm:` hunks: keep upstream's change,
+put the marked lines back, `git add` the files and run the command it prints (`... --continue`),
+which finishes the rebase and then the checks. A failing check may be upstream's own: it says so.
 It never pushes.
 
 PM strings live in their own catalogs (`apps/{web,mobile}/src/pm/i18n/translations`), never in upstream's

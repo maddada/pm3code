@@ -10,6 +10,10 @@
     "./client": {
       "types": "./src/client/index.ts",
       "import": "./src/client/index.ts"
+    },
+    "./identity": {
+      "types": "./src/identity.ts",
+      "import": "./src/identity.ts"
     }
   },
   "scripts": {

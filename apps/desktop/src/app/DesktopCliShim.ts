@@ -6,6 +6,7 @@ import * as Random from "effect/Random";
 
 import * as DesktopEnvironment from "./DesktopEnvironment.ts";
 import { makeComponentLogger } from "./DesktopObservability.ts";
+import { PM_DESKTOP_IDENTITY as PM, pmDesktop } from "@t3tools/pm/identity"; // t3code-pm:
 
 // AppImage mounts change each run; the launcher must mount the image itself.
 const { logInfo, logWarning } = makeComponentLogger("desktop-cli-shim");
@@ -120,7 +121,7 @@ export const launcherPath = (environment: DesktopEnvironment.DesktopEnvironment[
   environment.path.join(
     environment.baseDir,
     "bin",
-    environment.platform === "win32" ? "t3.cmd" : "t3",
+    `${pmDesktop(PM.cliName, "t3")}${environment.platform === "win32" ? ".cmd" : ""}`, // t3code-pm:
   );
 
 export const install = Effect.gen(function* () {
