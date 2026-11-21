@@ -43,6 +43,7 @@ import {
   supportsEnvironmentUpdate,
 } from "./environment-maintenance";
 import { environmentReleaseCheckAtom, releaseCheckValue } from "./environmentUpdateCheck";
+import { PmSettingsSection } from "../../pm/settings"; // t3code-pm:
 
 export function SettingsEnvironmentDetailRouteScreen({
   route,
@@ -341,6 +342,7 @@ function EnvironmentDetail({ environmentId }: { readonly environmentId: Environm
                     />
                   ) : null}
                 </SettingsSection>
+                <PmSettingsSection environmentId={environmentId} /> {/* t3code-pm: */}
                 <SettingsSection title={gt("Providers")}>
                   <SettingsActionRow
                     icon="arrow.clockwise"

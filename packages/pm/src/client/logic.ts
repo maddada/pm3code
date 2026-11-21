@@ -6,7 +6,7 @@ import type {
   PmShownItemStatus,
   ThreadId,
 } from "@t3tools/contracts";
-import { PM_SHOWN_STATUS_ORDER } from "@t3tools/pm";
+import { PM_SHOWN_STATUS_ORDER } from "../work.ts";
 import { threadKey } from "@t3tools/client-runtime/state/entities";
 
 /** PMs first, keeping every other order as it was: a stable partition, not a re-sort. */
@@ -95,9 +95,10 @@ export function pmDock(
   );
   const awake = open.filter((ask) => !snoozed.includes(ask));
   const order = newestFirstAgedLast(now);
+  // Hermes lacks toSorted; `map` already made fresh arrays, so sorting them in place is safe.
   const asks: PmDockRow[] = awake
     .map((ask) => ({ kind: "ask" as const, key: `ask:${ask.askNo}`, ask, at: ask.createdAt }))
-    .toSorted(order);
+    .sort(order);
   const pages: PmDockRow[] = input.pages
     .filter((page) => page.state === "open")
     .map((page) => ({
@@ -106,7 +107,7 @@ export function pmDock(
       page,
       at: page.createdAt,
     }))
-    .toSorted(order);
+    .sort(order);
   const heldItems = new Set(awake.filter((ask) => ask.holds).map((ask) => ask.itemNo));
   const blocked: PmDockRow[] = input.items
     .filter((item) => item.shownStatus === "blocked" && !heldItems.has(item.itemNo))

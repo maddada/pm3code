@@ -156,6 +156,7 @@ import { deriveLayout } from "./lib/layout";
 import { useNativeLayoutMetrics } from "./native/native-layout-metrics";
 import { isPresentedRoute } from "./native/workspace-stack-projection";
 import { workspaceDetailRouter } from "./features/layout/workspace/workspace-detail-selection";
+import { pmScreens } from "./pm/routes"; // t3code-pm:
 
 const settingsPage = () => pageRoute({ itemStyle: "standard" });
 
@@ -792,6 +793,7 @@ const RootStackConfig = createWorkspaceStackNavigator({
       screen: ThreadAgentsSheet,
       options: sheetRoute({ detent: 0.5, androidMaxDetent: 0.9 }),
     }),
+    ...pmScreens, // t3code-pm:
     LinkedThread: createNativeStackScreen({
       screen: LinkedThreadSheet,
       options: sheetRoute({ detent: 0.9, android: "fullScreen" }),

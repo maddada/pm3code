@@ -14,6 +14,7 @@ import {
   threadListV2LayoutTime,
 } from "./threadListV2";
 import { computeThreadMoveAvailability } from "./threadOrder";
+import { usePmListedThreads } from "../../pm/threadList"; // t3code-pm:
 
 /**
  * Screens' select handlers read the content-only key set; a fresh one per list rebuild gave
@@ -67,7 +68,8 @@ export function useThreadListV2(input: {
   readonly settledShelfExpanded: boolean;
   readonly selectedThreadKey: string | null;
 }) {
-  const { threads, workingShelfEnabled } = input;
+  const { workingShelfEnabled } = input;
+  const threads = usePmListedThreads(input.threads); // t3code-pm:
   const layoutTime = useMemo(
     () => threadListV2LayoutTime({ threads, now: input.now, searchQuery: input.searchQuery }),
     [threads, input.now, input.searchQuery],

@@ -37,7 +37,7 @@ import { cn } from "../lib/utils";
 import { formatRelativeTime } from "../timestampFormat";
 import { runPmCommand } from "./actions";
 import { PmMissionDialog } from "./mission";
-import { pmAskTag, pmDock, type PmDockRow } from "./pm.logic";
+import { pmAskTag, pmDock, type PmDockRow } from "@t3tools/pm/client";
 import { pmCommands, pmKey, usePmSummary, usePmThreadDetail } from "./state";
 import { openPmPage, usePmFold } from "./uiState";
 

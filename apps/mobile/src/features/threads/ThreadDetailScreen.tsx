@@ -224,6 +224,7 @@ import { useOpenLinkedThread } from "./useOpenLinkedThread";
 import { useGlobalVoiceInput } from "../voice-input/VoiceInputProvider";
 import type { OrchestrationV2ProviderSession } from "@t3tools/contracts";
 import { voiceInputBlocksSubmission } from "@t3tools/client-runtime/voice-input";
+import { PmDock } from "../../pm/dock"; // t3code-pm:
 
 export interface ThreadDetailScreenProps {
   readonly header?: React.ReactNode;
@@ -1742,6 +1743,8 @@ function ThreadDetailBody(
                         threadId={props.selectedThread.id}
                       />
                     )}
+                    {/* t3code-pm: */}
+                    {props.draftMode ? null : <PmDock thread={props.selectedThread} />}
                     {props.feedbackSubmissions.map((submission) => (
                       <ComposerFeedback
                         key={submission.id}

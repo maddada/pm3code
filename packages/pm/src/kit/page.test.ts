@@ -54,6 +54,15 @@ describe("withPmPageTheme", () => {
     expect(html).toContain(PM_PAGE_THEME_SLOT);
     expect(withPmPageTheme(html, "dark")).toContain('setAttribute("data-gx-theme","dark")');
     expect(withPmPageTheme(html, "dark")).not.toContain(PM_PAGE_THEME_SLOT);
+    expect(withPmPageTheme(html, "dark")).not.toContain("ReactNativeWebView");
+  });
+
+  it("relays a native host's submissions to the app before the kit's own script runs", () => {
+    const html = withPmPageTheme(preparePmPage("<p>x</p>", state), "light", "native");
+    expect(html.indexOf("ReactNativeWebView.postMessage")).toBeGreaterThan(0);
+    expect(html.indexOf("ReactNativeWebView.postMessage")).toBeLessThan(
+      html.indexOf("window.ghostex="),
+    );
   });
 });
 

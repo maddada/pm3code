@@ -7,7 +7,8 @@ import {
 } from "@t3tools/contracts";
 import { threadKey } from "@t3tools/client-runtime/state/entities";
 import { isShownUnderParent } from "@t3tools/client-runtime/state/threads";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "@effect/vitest";
+import * as DateTime from "effect/DateTime";
 
 import {
   parsePmPageAnswers,
@@ -18,15 +19,16 @@ import {
   pmItemGroups,
   pmWorkerListKeys,
   withPmWorkers,
-} from "./pm.logic";
+} from "./logic.ts";
 
 const LISTED = {
   rootThreadId: ThreadId.make("w-1"),
   parentThreadId: null,
   relationshipToParent: null,
 };
+const iso = (ms: number) => DateTime.formatIso(DateTime.makeUnsafe(ms));
 const NOW = Date.parse("2026-11-21T12:00:00.000Z");
-const at = (minutesAgo: number) => new Date(NOW - minutesAgo * 60_000).toISOString();
+const at = (minutesAgo: number) => iso(NOW - minutesAgo * 60_000);
 
 const ask = (askNo: number, overrides: Partial<PmAsk> = {}): PmAsk => ({
   askNo,
@@ -139,8 +141,8 @@ describe("pmDock", () => {
         asks: [
           ask(1, { createdAt: at(60 * 30) }),
           ask(2, { createdAt: at(10) }),
-          ask(3, { snoozedUntil: new Date(NOW + 3_600_000).toISOString() }),
-          ask(4, { snoozedUntil: new Date(NOW - 60_000).toISOString() }),
+          ask(3, { snoozedUntil: iso(NOW + 3_600_000) }),
+          ask(4, { snoozedUntil: iso(NOW - 60_000) }),
           ask(5, { state: "answered" }),
         ],
         pages: [],

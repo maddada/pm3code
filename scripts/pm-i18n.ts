@@ -9,7 +9,7 @@ import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 
 type Catalog = Record<string, unknown>;
-const APPS = ["apps/web"];
+const APPS = ["apps/web", "apps/mobile"];
 const CONFIG = "src/pm/i18n/gt.config.json";
 const mode = process.argv[2];
 if (mode !== "generate" && mode !== "check") {

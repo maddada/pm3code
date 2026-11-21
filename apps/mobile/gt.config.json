@@ -5,7 +5,8 @@
     "src/**/*.{ts,tsx}",
     "../../packages/client-runtime/src/**/*.{ts,tsx}",
     "../../packages/shared/src/**/*.{ts,tsx}",
-    "!**/*.test.{ts,tsx}"
+    "!**/*.test.{ts,tsx}",
+    "!src/pm/**"
   ],
   "files": {
     "gt": {

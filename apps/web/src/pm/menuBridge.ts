@@ -1,5 +1,5 @@
 import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
-import { pmIndexSnapshot, pmKey } from "./indexSnapshot";
+import { pmIndexSnapshot, pmKey } from "@t3tools/pm/client";
 import type { PmThreadMenuState } from "./threadMenu.logic";
 
 // Upstream's thread menus call these; they load no React so those menus' tests keep running.

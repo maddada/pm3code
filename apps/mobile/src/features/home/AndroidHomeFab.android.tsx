@@ -22,6 +22,7 @@ import {
   useAppearancePreferences,
   useAndroidFloatingTabs,
 } from "../settings/appearance/AppearancePreferencesProvider";
+import { usePmOpenNewSheet } from "../../pm/header"; // t3code-pm:
 
 export function AndroidHomeFabLayout(props: ComponentProps<typeof SharedAndroidHomeFabLayout>) {
   const floatingTabsEnabled = useAndroidFloatingTabs();
@@ -44,6 +45,7 @@ export function AndroidHomeFabLayout(props: ComponentProps<typeof SharedAndroidH
   const bottomClearance = insets.bottom + FLOATING_TABS.bottom + FLOATING_TABS.edge + size;
   const context = floatingTabsEnabled && workspace ? { ...workspace, bottomClearance } : workspace;
   const scrollState = useRef({ anchor: 0, expanded: true });
+  const openNewPm = usePmOpenNewSheet(); // t3code-pm:
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
     const next = updateFabScroll(
@@ -71,6 +73,7 @@ export function AndroidHomeFabLayout(props: ComponentProps<typeof SharedAndroidH
           size={size}
           expanded={floatingTabsEnabled ? false : expanded}
           onPress={props.onStartNewTask}
+          onLongPress={openNewPm} // t3code-pm:
           className="absolute"
           style={
             floatingTabsEnabled

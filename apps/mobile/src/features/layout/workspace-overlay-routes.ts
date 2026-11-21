@@ -1,3 +1,5 @@
+import { PM_OVERLAY_ROUTES } from "../../pm/routeNames"; // t3code-pm:
+
 /**
  * Root routes listed as presented over the workspace, including ones that are plain cards on
  * Android but still sit above the workspace there.
@@ -37,6 +39,7 @@ const LISTED_OVERLAY_ROUTES: ReadonlySet<string> = new Set([
   "ThreadDevicePreview",
   "ThreadBrowserPreview",
   "ThreadSettingsSheet",
+  ...PM_OVERLAY_ROUTES, // t3code-pm:
 ]);
 
 // Every route whose `presentation` is a sheet or modal, read from the root stack's config once.

@@ -73,11 +73,24 @@ export function preparePmPage(html: string, state: PmPageState): string {
   return `<!doctype html><html><head>${block}</head><body>${html}</body></html>`;
 }
 
-/** Sets the page's theme before the kit reads it (a `srcdoc` frame has no URL fragment to carry it). */
-export const withPmPageTheme = (html: string, theme: "light" | "dark") =>
+/**
+ * In a native WebView the page is the top window, so the kit's `parent.postMessage` lands on the
+ * page itself: this relays submissions to the app, which answers with `window.postMessage`.
+ */
+const NATIVE_BRIDGE = `<script>addEventListener("message",function(e){var d=e.data;if(d&&d.type==="${PM_PAGE_SUBMIT}"&&window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify(d));});</script>`;
+
+/**
+ * Sets the page's theme before the kit reads it (a `srcdoc` frame has no URL fragment to carry
+ * it), and for a native WebView host adds the answer relay.
+ */
+export const withPmPageTheme = (
+  html: string,
+  theme: "light" | "dark",
+  host: "frame" | "native" = "frame",
+) =>
   html.replace(
     PM_PAGE_THEME_SLOT,
-    `<script>document.documentElement.setAttribute("data-gx-theme","${theme}");</script>`,
+    `<script>document.documentElement.setAttribute("data-gx-theme","${theme}");</script>${host === "native" ? NATIVE_BRIDGE : ""}`,
   );
 
 /** True when the answers are the "Mark as seen" kind a page without questions sends. */

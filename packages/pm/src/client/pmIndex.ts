@@ -16,8 +16,14 @@ export interface PmIndex {
 
 export const EMPTY_PM_INDEX: PmIndex = { pms: new Map(), workerOf: new Map(), enabled: new Set() };
 
+/** Reads a value a hook returned as the PM index; anything else (a test's mock) reads as no PMs. */
+export const asPmIndex = (value: unknown): PmIndex =>
+  value !== null && typeof value === "object" && (value as PmIndex).workerOf instanceof Map
+    ? (value as PmIndex)
+    : EMPTY_PM_INDEX;
+
 /**
  * The PM index as last computed, for menus built outside React. Kept free of React imports:
- * upstream's thread menu reads it, and that menu's tests run with React mocked.
+ * upstream's thread menus read it, and their tests run with React mocked.
  */
 export const pmIndexSnapshot: { current: PmIndex } = { current: EMPTY_PM_INDEX };

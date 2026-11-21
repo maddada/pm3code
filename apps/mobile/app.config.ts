@@ -2,8 +2,9 @@ import type { ExpoConfig } from "expo/config";
 
 import { BRAND_ASSET_PATHS } from "../../scripts/lib/brand-assets.ts";
 import { loadRepoEnv } from "../../scripts/lib/public-config.ts";
+import { PM_APP_IDENTITY } from "./src/pm/appIdentity.ts"; // t3code-pm:
 
-type AppVariant = "development" | "preview" | "production";
+type AppVariant = "development" | "preview" | "production" | "pm"; // t3code-pm: fork APK
 
 const repoEnv = loadRepoEnv();
 Object.assign(process.env, repoEnv);
@@ -102,6 +103,8 @@ const VARIANT_CONFIG = {
     relyingParty: "clerk.t3.codes",
     assets: RELEASE_ASSETS,
   },
+  // t3code-pm: installs beside the official app; build with T3CODE_MOBILE_UPDATES_ENABLED=0.
+  pm: { ...PM_APP_IDENTITY, relyingParty: "clerk.t3.codes", assets: PREVIEW_ASSETS },
 } as const;
 
 function resolveAppVariant(value: string | undefined): AppVariant {
@@ -109,6 +112,7 @@ function resolveAppVariant(value: string | undefined): AppVariant {
     case "development":
     case "preview":
     case "production":
+    case "pm": // t3code-pm:
       return value;
     case undefined:
       return "production";

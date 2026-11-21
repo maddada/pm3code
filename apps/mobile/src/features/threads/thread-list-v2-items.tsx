@@ -96,6 +96,7 @@ import { ThreadSearchMatchExcerpt } from "./thread-search-match";
 import { useScaledTextRole } from "../settings/appearance/useScaledTextRole";
 import { PullRequestGlyph } from "../pull-requests/pullRequestGlyphs";
 import { pullRequestStatus } from "../pull-requests/pullRequestStatus";
+import { PmRowBadge, PmRowCounts, usePmRowMenu } from "../../pm/row"; // t3code-pm:
 
 interface StatusLabel {
   // Null when the icon and timer carry the status on their own.
@@ -1095,6 +1096,7 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
       isRegeneratingTitle,
     ],
   );
+  const pmMenu = usePmRowMenu(thread); // t3code-pm:
   const menuActions = useMemo<MenuAction[]>(() => {
     const nested = Platform.OS === "ios";
     const localized = (action: MenuAction): MenuAction => ({ ...action, title: m(action.title) });
@@ -1110,6 +1112,7 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
         : []),
       { id: "copy-thread", title: gt("Copy thread"), image: "text.bubble" },
       { id: "copy-thread-id", title: gt("Copy thread ID"), image: "doc.on.doc" },
+      ...pmMenu.actions, // t3code-pm:
       ...(canShareWithGuest
         ? [{ id: "share-guest", title: gt("Share with guest"), image: "person.badge.plus" }]
         : []),
@@ -1204,9 +1207,11 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
     swipeActions.secondary,
     thread.branch,
     titleMenuItems,
+    pmMenu, // t3code-pm:
   ]);
   const handleMenuAction = useCallback(
     ({ nativeEvent }: { readonly nativeEvent: { readonly event: string } }) => {
+      if (pmMenu.handle(nativeEvent.event)) return; // t3code-pm:
       if (nativeEvent.event === "new-thread-on-branch") onNewThreadOnBranch(thread);
       if (nativeEvent.event === "settle") handleSettle();
       if (nativeEvent.event === "unsettle") handleUnsettle();
@@ -1291,6 +1296,7 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
       setCustomSnoozeOpen,
       snoozePresets,
       props.snoozePresets,
+      pmMenu, // t3code-pm:
     ],
   );
   const primaryAction = useMemo(() => {
@@ -1403,6 +1409,8 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
           {thread.title}
         </Text>
         <View className="flex-row items-center gap-1.5" style={{ minHeight: titleLineHeight }}>
+          {/* t3code-pm: */}
+          <PmRowBadge thread={thread} />
           {props.hasQueuedMessages ? <QueuedMessageIcon selected={selected} /> : null}
           {pinnedRow ? (
             <SymbolView
@@ -1500,6 +1508,8 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
           />
         </View>
       ) : null}
+      {/* t3code-pm: */}
+      <PmRowCounts thread={thread} inset={titleTextInset} onSelectThread={onSelectThread} />
       <View className="mt-1 flex-row items-center gap-2" style={{ paddingLeft: titleTextInset }}>
         {(rawStatus === "failed" || rawStatus === "limited") && thread.runtime?.lastError ? (
           <Text

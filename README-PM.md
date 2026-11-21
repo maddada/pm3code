@@ -17,7 +17,11 @@ A personal fork of [T3 Code](https://github.com/pingdotgg/t3code) that adds **Pr
 - **Live pages.** A PM can publish an HTML page (Ghostex's page kit) that opens in a floating
   window over the chat; your answers go back to the PM.
 - **One switch.** Settings, Project managers, "Project Managers (t3code-pm)". Off hides every PM
-  view, tool and watcher; PM threads show as normal threads and nothing is deleted.
+  view, tool and watcher; PM threads show as normal threads and nothing is deleted. On the phone
+  it is in Settings, Environments, the environment, "Project managers".
+- **Mobile.** PM rows with their counts and workers in the thread list, the dock above the
+  composer, the PM sheet (Work, Workers, Goal, Memory) from the header button, Live pages, and New
+  PM from the Android home button's long-press or any thread's long-press menu.
 
 The PM's tools (`pm_*`) reach any provider that gets T3's MCP server (Claude, Codex, Cursor,
 OpenCode, Pi, Muse and the ACP family). Workers can use any provider.
@@ -49,6 +53,42 @@ The free `Replay (dev)` provider has a `pm` scenario that drives the real `pm_*`
 To try the fork on your real data, quit the official app and copy
 `~/.t3/userdata/statev2.sqlite` into `~/.t3-pm/userdata/`.
 
+## Trying the Android app
+
+The fork ships its own APK, **T3 Code PM** (`com.t3codepm.app`). It installs beside the official
+T3 Code app, never takes upstream's over-the-air updates, and talks to any T3 server; PM views
+show only on a fork server.
+
+1. **Install the APK.** Copy `t3code-pm-<version>.apk` to the phone and open it (allow installs
+   from your file manager or browser when Android asks), or `adb install t3code-pm-<version>.apk`.
+2. **Set up Tailscale.** Install Tailscale on the computer running the fork server and on the
+   phone, and sign both in to the same tailnet.
+3. **Start the fork's server where the phone can reach it.** With the desktop app, turn on
+   remote access in Settings, Connections. From a checkout, `vp run dev --share` publishes it on
+   the tailnet over HTTPS (it needs HTTPS certificates turned on in the tailnet's DNS settings);
+   without them, `vp run dev --host 0.0.0.0` serves plain HTTP, which Tailscale still encrypts.
+4. **Pair.** In T3 Code PM, Add environment: scan the QR code from Settings, Connections, or enter
+   the computer's tailnet address with the port (for example `100.x.y.z:13773`) and a pairing
+   code from `node apps/server/src/bin.ts auth pairing create` (or the desktop's Connections). The
+   environment appears with its projects; PMs show in the thread list.
+
+T3 Connect does not work in the fork APK. The APK is built without the T3 Connect settings, so
+it shows no sign-in. A build with them shows Clerk's sign-in, but Clerk rejects the fork's
+redirect (`clerk://com.t3codepm.app.callback` is not an authorized redirect URI for T3's
+instance), so only T3's own apps can sign in. Use Tailscale or the local network.
+
+Building the APK yourself needs a JDK 17 and the Android SDK:
+
+```sh
+T3CODE_PM_KEYSTORE=~/keys/t3code-pm.keystore \
+T3CODE_PM_KEYSTORE_PASSWORD_FILE=~/keys/t3code-pm.password \
+scripts/pm-build-apk.sh ~/Downloads
+```
+
+Make the keystore once with `keytool -genkeypair -keystore ~/keys/t3code-pm.keystore -alias
+t3code-pm -keyalg RSA -keysize 4096 -validity 10000` and keep it: Android only installs updates
+signed with the same key. Never commit it.
+
 ## Syncing with upstream
 
 ```sh
@@ -62,7 +102,7 @@ touches and both translation checks. On a conflict it lists the files and which 
 `// t3code-pm:`, so conflicts stay small: keep upstream's change and put the marked line back.
 It never pushes.
 
-PM strings live in their own catalogs (`apps/web/src/pm/i18n/translations`), never in upstream's
+PM strings live in their own catalogs (`apps/{web,mobile}/src/pm/i18n/translations`), never in upstream's
 generated `translations/*.json`. After changing PM copy, run `node scripts/pm-i18n.ts generate`
 and translate the new keys by hand; `node scripts/pm-i18n.ts check` is the matching check.
 

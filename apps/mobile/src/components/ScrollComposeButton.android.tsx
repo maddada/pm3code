@@ -18,6 +18,7 @@ import { resolveScaledTextRole } from "../lib/appearancePreferences";
 export function ScrollComposeButton(props: {
   readonly expanded: boolean;
   readonly onPress: () => void;
+  readonly onLongPress?: () => void; // t3code-pm:
   readonly size?: number;
   readonly className?: string;
   readonly style?: StyleProp<ViewStyle>;
@@ -91,6 +92,7 @@ export function ScrollComposeButton(props: {
       {/* The visual host is wider than the button; only this target intercepts list touches. */}
       <Pressable
         onPress={props.onPress}
+        onLongPress={props.onLongPress} // t3code-pm:
         accessibilityRole="button"
         accessibilityLabel={gt("New thread")}
         android_ripple={{ foreground: true }}

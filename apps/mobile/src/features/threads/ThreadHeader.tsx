@@ -13,6 +13,7 @@ import {
   useThreadGitMenuDefinition,
   type ThreadGitControlsProps,
 } from "./ThreadGitControls";
+import { usePmHeaderActions } from "../../pm/header"; // t3code-pm:
 
 export function ThreadHeader(props: {
   readonly title: string;
@@ -44,6 +45,7 @@ export function ThreadHeader(props: {
         },
       ]
     : [];
+  actions.push(...usePmHeaderActions()); // t3code-pm:
   const menus = [gitMenu, terminalMenu].filter((menu): menu is AppBarMenu => menu !== null);
 
   return (

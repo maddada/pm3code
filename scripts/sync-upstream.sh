@@ -64,10 +64,10 @@ echo "sync-upstream: $(git grep -c 't3code-pm:' -- ':!*.md' ':!scripts/sync-upst
 vp i
 
 echo "sync-upstream: PM tests"
-vp test run packages/pm apps/server/src/pm apps/web/src/pm
+vp test run packages/pm apps/server/src/pm apps/web/src/pm apps/mobile/src/pm apps/mobile/src/dependency-graph.test.ts
 
 echo "sync-upstream: typecheck of the packages PM touches"
-for dir in packages/contracts packages/pm packages/client-runtime apps/server apps/web apps/desktop; do
+for dir in packages/contracts packages/pm packages/client-runtime apps/server apps/web apps/desktop apps/mobile; do
   (cd "$dir" && vp run typecheck)
 done
 

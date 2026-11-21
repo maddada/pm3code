@@ -6,6 +6,10 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
+    },
+    "./client": {
+      "types": "./src/client/index.ts",
+      "import": "./src/client/index.ts"
     }
   },
   "scripts": {
@@ -13,6 +17,8 @@
     "test": "vp test run --config ../../vite.config.ts --dir ."
   },
   "dependencies": {
+    "@t3tools/client-runtime": "workspace:*",
+    "@t3tools/contracts": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {

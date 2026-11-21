@@ -21,7 +21,7 @@ import { useThreadShells } from "../state/entities";
 import { buildThreadRouteParams } from "../threadRoutes";
 import { formatRelativeTime } from "../timestampFormat";
 import { createPmAndOpen } from "./actions";
-import { pmFirst } from "./pm.logic";
+import { pmFirst } from "@t3tools/pm/client";
 import { pmKey, usePmIndex } from "./state";
 
 type SidebarThread = Pick<EnvironmentThreadShell, "environmentId" | "id">;

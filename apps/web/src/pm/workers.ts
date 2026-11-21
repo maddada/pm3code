@@ -1,4 +1,4 @@
-import { pmWorkerListKeys, withPmWorkers } from "./pm.logic";
+import { pmWorkerListKeys, withPmWorkers } from "@t3tools/pm/client";
 import { usePmIndex } from "./state";
 
 /** Hides every PM worker from the thread lists, as upstream hides delegated children. */

@@ -6,7 +6,11 @@ import { type ReactNode, use, useState } from "react";
 import { TimelineRowCtx } from "../components/chat/timelineRowContext";
 import { cn } from "../lib/utils";
 import { usePmIndex } from "./state";
-import { parsePmPageAnswers, parsePmReportNotification, type PmReportPill } from "./pm.logic";
+import {
+  parsePmPageAnswers,
+  parsePmReportNotification,
+  type PmReportPill,
+} from "@t3tools/pm/client";
 
 type TurnItem = OrchestrationV2ThreadProjection["turnItems"][number];
 

@@ -23,7 +23,7 @@ import { useThreadShells } from "../state/entities";
 import { buildThreadRouteParams } from "../threadRoutes";
 import { runPmCommand } from "./actions";
 import { savePmMission } from "./mission";
-import { pmItemGroups } from "./pm.logic";
+import { pmItemGroups } from "@t3tools/pm/client";
 import { pmCommands, pmKey, usePmSummary, usePmThreadDetail } from "./state";
 import { openPmPage, usePmFold } from "./uiState";
 

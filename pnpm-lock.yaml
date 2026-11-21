@@ -613,6 +613,9 @@ importers:
       '@t3tools/mobile-terminal-native':
         specifier: file:./modules/t3-terminal
         version: file:apps/mobile/modules/t3-terminal
+      '@t3tools/pm':
+        specifier: workspace:*
+        version: link:../../packages/pm
       '@t3tools/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -1690,6 +1693,12 @@ importers:
 
   packages/pm:
     dependencies:
+      '@t3tools/client-runtime':
+        specifier: workspace:*
+        version: link:../client-runtime
+      '@t3tools/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       effect:
         specifier: 4.1.3
         version: 4.1.3
