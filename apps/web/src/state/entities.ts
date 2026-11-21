@@ -42,6 +42,7 @@ import {
 import { environmentThreadDetails, environmentThreadShells } from "./threads";
 import { waitForAtomValue } from "./waitForAtomValue";
 import { m } from "../i18n/messages";
+import { usePmWorkersUnderParent } from "../pm/workers"; // t3code-pm:
 
 const EMPTY_THREAD_REFS: ReadonlyArray<ScopedThreadRef> = Object.freeze([]);
 const EMPTY_VISIBLE_TURN_ITEMS: ReadonlyArray<OrchestrationV2ProjectedTurnItem> = Object.freeze([]);
@@ -142,7 +143,7 @@ export function useAllEnvironmentProjectSnapshotsReady(): boolean {
 
 /** Tasks linked environments run for a listed thread, by thread key; lists show them under it. */
 export function useDelegatedUnderParent(): ReadonlySet<string> {
-  return useAtomValue(environmentThreadShells.delegatedUnderParentAtom);
+  return usePmWorkersUnderParent(useAtomValue(environmentThreadShells.delegatedUnderParentAtom)); // t3code-pm:
 }
 
 export function useThreadShellsForProjectRefs(

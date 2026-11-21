@@ -48,6 +48,7 @@ import {
   THREAD_DETAILS_PANEL_LABEL_CLASS,
 } from "./threadDetailsPanelStyles";
 import { Menu, MenuPopup } from "../ui/menu";
+import { pmHiddenSections, PmDetailsSections, usePmThread } from "../../pm/details"; // t3code-pm:
 
 interface ThreadDetailsPanelProps extends Pick<
   ComponentProps<typeof ThreadDetailsCard>,
@@ -104,6 +105,7 @@ export function ThreadDetailsPanel(props: ThreadDetailsPanelProps) {
     props.activeProjectScripts && visible.scripts ? props.gitCwd : null,
   );
   const activeThreadRef = { environmentId: props.environmentId, threadId: props.threadId };
+  const pm = usePmThread(activeThreadRef); // t3code-pm:
   const project = useProject(scopeProjectRef(props.environmentId, props.projectId));
   const serverConfig = useServerConfigs().get(props.environmentId);
   const tracksFolders = (project?.trackedFolders?.length ?? 0) > 0;
@@ -197,9 +199,11 @@ export function ThreadDetailsPanel(props: ThreadDetailsPanelProps) {
             (visible.gitActions || (visible.changes && folderIsRepo)),
           // Also for a project that tracks nothing: a thread can change a submodule.
           repositories: offersGit && density !== "essential" && visible.gitActions,
+          ...pmHiddenSections(pm), // t3code-pm:
         };
         return (
           <>
+            <PmDetailsSections threadRef={activeThreadRef} /* t3code-pm: */ />
             <div className="group/details-items">
               {show.environment || show.openIn || show.scripts ? (
                 <ThreadDetailsSection

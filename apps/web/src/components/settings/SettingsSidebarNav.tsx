@@ -50,6 +50,8 @@ import {
   SidebarInput,
 } from "../ui/sidebar";
 import { scrollToSettingsTarget } from "./settingsLayout";
+import { BriefcaseIcon } from "lucide-react"; // t3code-pm:
+import { PM_SETTINGS_PATH } from "../../pm/settingsSearch"; // t3code-pm:
 import {
   searchSettings,
   revealSettingsSearchTarget,
@@ -103,6 +105,7 @@ const SETTINGS_SECTION_ICONS: Readonly<
   "/settings/browser": GlobeIcon,
   "/settings/devices": SmartphoneIcon,
   "/settings/scheduled-tasks": CalendarClockIcon,
+  [PM_SETTINGS_PATH]: BriefcaseIcon, // t3code-pm:
   "/settings/source-control": GitBranchIcon,
   "/settings/worktrees": FolderTreeIcon,
   "/settings/connections": ServerIcon,

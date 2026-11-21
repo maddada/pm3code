@@ -104,39 +104,6 @@ export function pageAnswersMessage(input: {
   )}">${input.json}</pm-page-answers>`;
 }
 
-const PAGE_CSP =
-  "default-src 'none'; img-src data: blob:; media-src data: blob:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; frame-src 'none'; form-action 'none'; base-uri 'none'";
-
-// Minimal kit: collects form fields and posts them to the parent frame, which owns the answer
-// channel. The full Ghostex kit (styles, question widgets) lands with the web Live page window.
-const PAGE_KIT_SCRIPT = `
-(() => {
-  const post = (payload) => parent.postMessage({ type: "pm.page.submit", ...payload }, "*");
-  const collect = () => {
-    const answers = {};
-    for (const field of document.querySelectorAll("[name]")) {
-      if ((field.type === "radio" || field.type === "checkbox") && !field.checked) continue;
-      const prior = answers[field.name];
-      answers[field.name] = prior === undefined ? field.value : [].concat(prior, field.value);
-    }
-    return answers;
-  };
-  document.addEventListener("submit", (event) => { event.preventDefault(); post({ answers: collect() }); });
-  document.addEventListener("click", (event) => {
-    const target = event.target instanceof Element ? event.target.closest("[data-pm-send],[data-pm-seen]") : null;
-    if (!target) return;
-    event.preventDefault();
-    post(target.hasAttribute("data-pm-seen") ? { seen: true } : { answers: collect() });
-  });
-})();
-`;
-
-/** Wraps a PM's page with a content-security policy and the kit script. */
-export function preparePage(input: { readonly title: string; readonly html: string }): string {
-  const escapedTitle = input.title.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
-  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${PAGE_CSP}"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapedTitle}</title></head><body>${input.html}<script>${PAGE_KIT_SCRIPT}</script></body></html>`;
-}
-
 export function linkKind(url: string): "pr" | "issue" | "url" {
   if (/\/(pull|pulls|merge_requests|pull-requests)\/\d+/.test(url)) return "pr";
   if (/\/(issues|issue)\/\d+|\/browse\/[A-Z][A-Z0-9]+-\d+/.test(url)) return "issue";

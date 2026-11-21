@@ -76,6 +76,7 @@ import {
   thoughtPreviewPlugins,
   THOUGHT_PREVIEW_SOURCE_MAX_LENGTH,
 } from "./TimelineWorkEntryRow.logic";
+import { pmReportOf, PmReportCard } from "../../pm/timeline"; // t3code-pm:
 
 export function useThreadReadTarget(entry: TimelineWorkEntry, environmentId: EnvironmentId) {
   const rawThreadId = threadReadTargetId(entry);
@@ -231,6 +232,9 @@ type WorkEntryRowProps = {
 export const SimpleWorkEntryRow = memo(function SimpleWorkEntryRow(props: WorkEntryRowProps) {
   const ctx = use(TimelineRowCtx);
   const item = props.workEntry.projectedItem?.item;
+  // t3code-pm:
+  if (pmReportOf(item))
+    return <PmReportCard item={item} fallback={<WorkEntryLogRow {...props} />} />;
   const childThreadId =
     item?.type === "notification" ? notificationChildThreadId(item.source) : undefined;
   if (item?.type !== "notification" || childThreadId === undefined) {

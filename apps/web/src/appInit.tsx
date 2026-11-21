@@ -66,6 +66,7 @@ import { installCommandPaletteCommands } from "./shortcuts/commandPaletteCommand
 import { registerOpenFavoriteEditorCommand } from "./components/chat/OpenInPickerShortcut";
 import { environmentThreadShells, threadEnvironment } from "./state/threads";
 import { resolveActiveThreadRouteRef, resolveThreadRouteTarget } from "./threadRoutes";
+import { installPmCommands } from "./pm/entryPoints"; // t3code-pm:
 
 /** Writes appearance settings onto the document, touching only the groups that changed. */
 function startClientAppearance(): void {
@@ -283,6 +284,7 @@ export function startAppServices(): AppRouter {
   startBrowserProfileReporting();
   installChatRouteCommands(router);
   installCommandPaletteCommands(router);
+  installPmCommands(router); // t3code-pm:
   registerOpenFavoriteEditorCommand();
   startThreadOverlayRetention(router);
   // Drafts promote as their server threads arrive, wherever the user is.

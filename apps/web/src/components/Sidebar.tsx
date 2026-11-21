@@ -282,6 +282,7 @@ import {
   SidebarSectionHeader,
   SidebarSectionPlaceholder,
 } from "./sidebar/SidebarListMarkers";
+import * as Pm from "../pm/sidebar"; // t3code-pm:
 
 function sameSidebarProviderEntries(
   left: ReadonlyMap<string, SidebarProviderEntry>,
@@ -475,6 +476,7 @@ function useSidebarThreads(input: {
   );
   // Shared with the old per-project sidebar, so folders keep their open state.
   const projectExpandedById = useUiStateStore((store) => store.projectExpandedById);
+  const pmFirst = Pm.usePmFirst(); // t3code-pm:
   const setProjectExpanded = useUiStateStore((store) => store.setProjectExpanded);
   const [settledTail, setSettledTail] = useState({
     scopeKey: projectScopeKey,
@@ -532,10 +534,11 @@ function useSidebarThreads(input: {
   const visibleWorkingThreads = workingShelfExpanded
     ? workingThreads
     : routeThreadOnly(workingThreads, routeRowThreadKey);
+  const folderThreads = pmFirst(activeThreads); // t3code-pm: PMs first in their folder
   const projectFolders =
     folderGroups === null
       ? null
-      : groupSidebarThreadsByProject(folderGroups, activeThreads, keepEmpty).map((folder) => {
+      : groupSidebarThreadsByProject(folderGroups, folderThreads, keepEmpty).map((folder) => {
           const collapsed = !resolveProjectExpanded(
             projectExpandedById,
             sidebarFolderExpansionKeys(folder.group),
@@ -1275,6 +1278,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
           api.contextMenu.show(
             [
               { id: "new-thread", label: gt("New thread") },
+              ...Pm.pmFolderMenuItems(group), // t3code-pm:
               { id: "copy-path", label: gt("Copy path") },
               ...(canPinProject(group)
                 ? [
@@ -1290,6 +1294,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
           ),
         );
         if (clicked._tag === "Failure") return;
+        if (Pm.handlePmFolderMenuAction(clicked.value, group)) return; // t3code-pm:
         switch (clicked.value) {
           case "new-thread":
             startThreadInProjectFolder(group);
@@ -2668,6 +2673,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                 projectRef.projectId === thread.projectId,
             ),
           ) ?? null;
+        const pmState = Pm.pmMenuState(thread, threadProjectGroup?.displayName ?? null); // t3code-pm:
         const clicked = await settlePromise(() =>
           api.contextMenu.show(
             buildThreadActionMenuItems({
@@ -2676,6 +2682,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                 AuthOrchestrationOperateScope,
               ),
               branch: thread.branch ?? null,
+              pm: pmState, // t3code-pm:
               // An archived project is not a filter choice.
               projectFilter:
                 threadProjectGroup && !threadProjectGroup.archived
@@ -2724,6 +2731,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
           if (preset) attemptSnooze(threadRef, preset);
           return;
         }
+        if (Pm.handlePmThreadAction(clicked.value, pmState)) return; // t3code-pm:
         switch (clicked.value) {
           case "filter-by-project":
             if (threadProjectGroup) {
@@ -3584,6 +3592,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                           // Folders draw active rows in their own place below.
                           if (projectFolders !== null && item.section === "active") continue;
                           items.push(renderThreadRow(threadByKey.get(item.key)!, item.section));
+                          items.push(Pm.pmWorkerRows(threadByKey.get(item.key)!)); // t3code-pm:
                           continue;
                         }
                         if (projectFolders !== null && item.marker === "active-placeholder") {
@@ -3607,6 +3616,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                                   sidebarFolderRowId(folder.group.projectKey),
                                 ),
                               );
+                              items.push(Pm.pmWorkerRows(thread)); // t3code-pm:
                             }
                           }
                           continue;

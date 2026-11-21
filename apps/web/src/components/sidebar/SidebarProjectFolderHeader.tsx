@@ -13,6 +13,7 @@ import { resolveSidebarFolderDot, resolveThreadLastVisitedAt } from "../Sidebar.
 import { ProjectFavicon } from "../ProjectFavicon";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { PmNewButton } from "../../pm/sidebar"; // t3code-pm:
 
 const FOLDER_DOT_CLASS_NAME = {
   attention: "bg-warning",
@@ -112,6 +113,7 @@ export const SidebarProjectFolderHeader = memo(function SidebarProjectFolderHead
       </button>
       {/* Sits over the count, which hides on hover or focus, and left of the chevron. */}
       <span className="absolute inset-y-0 right-6 flex items-center opacity-0 focus-within:opacity-100 group-hover/project-folder:opacity-100 pointer-coarse:opacity-100">
+        <PmNewButton group={group} rowId={rowId} /* t3code-pm: */ />
         <Tooltip>
           <TooltipTrigger
             render={

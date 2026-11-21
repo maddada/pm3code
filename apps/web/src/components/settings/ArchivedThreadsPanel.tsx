@@ -25,6 +25,7 @@ import { ProjectFavicon } from "../ProjectFavicon";
 import { msg, T, useGT, useMessages } from "gt-react";
 import { useRef, useState } from "react";
 import { Tooltip, TooltipTrigger, TooltipPopup } from "../ui/tooltip";
+import { pmArchivedTitle } from "../../pm/sidebar"; // t3code-pm:
 
 const ARCHIVE_ACTIONS = [
   {
@@ -256,7 +257,7 @@ export function ArchivedThreadsPanel() {
                     event.preventDefault();
                     void handleContextMenu(thread, { x: event.clientX, y: event.clientY });
                   }}
-                  title={thread.title}
+                  title={pmArchivedTitle(thread) /* t3code-pm: */}
                   description={
                     <span className={hasMultipleEnvironments ? "block truncate" : undefined}>
                       {hasMultipleEnvironments ? `${thread.environmentLabel} · ` : null}

@@ -13,6 +13,7 @@ import { MessageId, ProjectId, ThreadId, TrimmedNonEmptyString } from "./baseSch
 import { ModelSelection } from "./modelSelection.ts";
 
 export const PmStoredItemStatus = Schema.Literals(["moving", "later", "finished", "dropped"]);
+export type PmShownItemStatus = typeof PmShownItemStatus.Type;
 export const PmShownItemStatus = Schema.Literals([
   "dropped",
   "done",
@@ -134,6 +135,7 @@ export const PmLink = Schema.Struct({
   title: Schema.NullOr(Schema.String),
 });
 
+export type PmPageSummary = typeof PmPageSummary.Type;
 export const PmPageSummary = Schema.Struct({
   pageId: Schema.String,
   itemNo: Schema.NullOr(Schema.Number),
@@ -207,6 +209,11 @@ export const PM_WS_METHODS = {
   settingsGet: "pm.settings.get",
   settingsSet: "pm.settings.set",
 } as const;
+
+/** The streaming `pm.*` methods, for the client runtime's subscription factory. */
+export type PmSubscriptionRpcTag =
+  | typeof PM_WS_METHODS.subscribe
+  | typeof PM_WS_METHODS.subscribeThread;
 
 const AskTarget = { ...PmTarget, ask: Schema.Number };
 

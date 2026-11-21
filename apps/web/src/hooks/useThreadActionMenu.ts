@@ -51,6 +51,7 @@ import { useCopyToClipboard } from "./useCopyToClipboard";
 import { useNewThreadHandler } from "./useHandleNewThread";
 import { useClientSettings } from "./useSettings";
 import { canTurnThreadIntoProject, useThreadActions } from "./useThreadActions";
+import { handlePmThreadAction, pmMenuState } from "../pm/menuBridge"; // t3code-pm:
 
 function failureToast(title: string, error: unknown) {
   toastManager.add(
@@ -142,6 +143,7 @@ export function useThreadActionMenu(input: {
         canOperate: readEnvironmentScope(threadRef.environmentId, AuthOrchestrationOperateScope),
         canFind: onFind !== undefined,
         branch: thread.branch ?? null,
+        pm: pmMenuState(thread, null), // t3code-pm:
         projectFilter: null,
         isPinned: thread.pinnedAt != null,
         isSettled: supports.settlement && thread.settledOverride === "settled",
@@ -194,6 +196,7 @@ export function useThreadActionMenu(input: {
           failureToast(title, squashAtomCommandFailure(result));
         }
       };
+      if (handlePmThreadAction(action, pmMenuState(thread, null))) return; // t3code-pm:
       switch (action) {
         case "find":
           onFind?.(threadRef);

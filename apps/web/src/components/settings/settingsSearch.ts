@@ -16,6 +16,7 @@ import { writeLocalStorageValue } from "../../hooks/useLocalStorage";
 import type { MessageResolver } from "../../i18n/messages";
 import { commandLabel } from "./KeybindingsSettings.logic";
 import type { ResolvedSettingsScope } from "./settingsScope";
+import * as Pm from "../../pm/settingsSearch"; // t3code-pm:
 
 export type SettingsPath =
   | "/settings/projects"
@@ -40,7 +41,8 @@ export type SettingsPath =
   | "/settings/maintenance"
   | "/settings/labs"
   | "/settings/about"
-  | "/settings/archived";
+  | "/settings/archived"
+  | typeof Pm.PM_SETTINGS_PATH; // t3code-pm:
 
 export type SettingsSearchScope =
   | "environment"
@@ -107,6 +109,7 @@ export const SETTINGS_SECTION_LABELS: Readonly<Record<SettingsPath, string>> = {
   "/settings/browser": msg("Browser"),
   "/settings/devices": msg("Devices"),
   "/settings/scheduled-tasks": msg("Scheduled tasks"),
+  [Pm.PM_SETTINGS_PATH]: Pm.PM_SETTINGS_LABEL, // t3code-pm:
   "/settings/source-control": msg("Source control & issues"),
   "/settings/worktrees": msg("Worktrees"),
   "/settings/connections": msg("Environments"),
@@ -155,6 +158,7 @@ export const SETTINGS_NAV_GROUPS: ReadonlyArray<{
       "/settings/browser",
       "/settings/devices",
       "/settings/scheduled-tasks",
+      Pm.PM_SETTINGS_PATH, // t3code-pm:
     ],
   },
   {
@@ -1479,6 +1483,7 @@ export const SETTINGS_SEARCH_ITEMS = [
     to: "/settings/archived",
     searchTerms: [msg("restore reopen deleted history projects")],
   },
+  ...Pm.PM_SETTINGS_SEARCH_ITEMS, // t3code-pm:
 ] as const satisfies ReadonlyArray<SettingsSearchItem>;
 
 export type SettingsSearchItemId = (typeof SETTINGS_SEARCH_ITEMS)[number]["id"];
@@ -1509,6 +1514,7 @@ const SETTINGS_CATEGORY_SCOPES: Readonly<Record<SettingsPath, SettingsSearchScop
   "/settings/labs": null,
   "/settings/about": null,
   "/settings/archived": "project-defaults",
+  [Pm.PM_SETTINGS_PATH]: null, // t3code-pm:
 };
 
 const RENAMED_SETTINGS_PATHS: Readonly<Record<string, SettingsPath>> = {

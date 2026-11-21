@@ -41,7 +41,9 @@ import {
   parseAskTag,
   parsePmAnswers,
   parsePmWait,
+  isPmPageSeen,
   PM_PLAYBOOK_VERSION,
+  preparePmPage,
   type PmShownItemStatus,
   type PmWaitOn,
   type PmWorkerState,
@@ -70,7 +72,6 @@ import {
   pageAnswersMessage,
   PM_NEW_TITLE,
   PM_SETUP_MESSAGE,
-  preparePage,
   workerBrief,
 } from "./PmText.ts";
 import { pmVisibility } from "./PmVisibility.ts";
@@ -97,6 +98,7 @@ const newId = Effect.gen(function* () {
   return `${ms.toString(36)}${salt.toString(36).padStart(6, "0")}`;
 });
 const encodeJson = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+const decodeJson = Schema.decodeUnknownEffect(Schema.fromJsonString(Schema.Unknown));
 
 const RUNNING_STATUSES = new Set(["preparing", "queued", "starting", "running"]);
 
@@ -1211,13 +1213,25 @@ const make = Effect.gen(function* () {
 
   const pageGet = Effect.fn("PmService.pageGet")(function* (pageId: string) {
     const page = yield* requirePage(pageId);
-    return { pageId, title: page.title, html: preparePage({ title: page.title, html: page.html }) };
+    const answers =
+      page.answersJson === null
+        ? null
+        : yield* decodeJson(page.answersJson).pipe(Effect.orElseSucceed(() => null));
+    const html = preparePmPage(page.html, {
+      answered: page.state === "answered" || page.state === "seen",
+      answers,
+      answeredAt: null,
+      awaitsSeen: page.questionTags.length === 0 && page.state === "open",
+    });
+    return { pageId, title: page.title, html };
   });
 
   const pageAnswer = Effect.fn("PmService.pageAnswer")(function* (
     pageId: string,
     answers: unknown,
   ) {
+    // The kit's "Mark as seen" footer sends `{ seen: true, reply }` through the same channel.
+    if (isPmPageSeen(answers)) return yield* pageMarkSeen(pageId, answers.reply);
     const page = yield* requirePage(pageId);
     const json = yield* encodeJson(answers ?? null).pipe(
       Effect.mapError(() => invalid("The answers are not JSON.")),
@@ -1457,7 +1471,13 @@ const make = Effect.gen(function* () {
       text: report.text,
       createdBy: "agent",
       senderThreadId: report.workerThreadId,
-      notification: { source: { kind: "system" }, outcome: "updated", summary: report.summary },
+      notification: {
+        source: { kind: "system" },
+        outcome: "updated",
+        summary: report.summary,
+        // The full report, so the timeline card can open to it.
+        detail: report.text,
+      },
     });
     yield* store.markReportDelivered(report.reportId, at);
     yield* store.updateWorker(report.workerThreadId, {

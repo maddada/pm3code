@@ -292,6 +292,7 @@ import { readIssueListPreferences } from "~/components/issue/issueListPreference
 import { IssueGlyph } from "~/components/issue/issuePresentation";
 import { useThreadRouteTarget } from "../hooks/useThreadRouteTarget";
 import { threadRecentUse } from "@t3tools/shared/paletteSearch";
+import { usePmPaletteItems } from "../pm/entryPoints"; // t3code-pm:
 
 const EMPTY_BROWSE_ENTRIES: FilesystemBrowseResult["entries"] = [];
 const ADD_PROJECT_ENTRY_GROUP = "add-project";
@@ -1380,6 +1381,7 @@ function OpenCommandPaletteDialog(props: {
       groups: [{ value: NEW_THREAD_IN_GROUP, label: gt("Projects"), items: projectThreadItems }],
     });
   }
+  actionItems.push(...usePmPaletteItems(currentProject)); // t3code-pm:
 
   if (scratchTargetEnvironmentId !== null) {
     actionItems.push({

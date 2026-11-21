@@ -132,6 +132,7 @@ import { observeVisibleAnimation } from "~/lib/visibleAnimation";
 import { useThreadHasUnsentDraft } from "../../composerDraftStore";
 import { ThreadDetailsIssueRows } from "../chat/ThreadDetailsIssueRows";
 import { IssueGlyph, issueStatePresentation } from "../issue/issuePresentation";
+import { PmHoverRows, usePmRow } from "../../pm/sidebar"; // t3code-pm:
 
 // The fields thread rows show. Provider status pushes refresh `checkedAt`,
 // status and auth on every provider; leaving those out keeps each
@@ -309,6 +310,7 @@ function SidebarThreadTooltip({
             <div className="min-w-0 truncate text-foreground/75">{projectDisplayName}</div>
           </div>
         ) : null}
+        <PmHoverRows thread={thread} /* t3code-pm: */ />
         {environmentLabel ? (
           <div className="flex min-w-0 items-center gap-2">
             <EnvironmentMachineIcon
@@ -767,6 +769,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
 
   const isUnread = hasUnseenCompletion({ ...thread, lastVisitedAt });
   const status = resolveSidebarRowStatus({ ...thread, lastVisitedAt });
+  const pm = usePmRow(thread, status); // t3code-pm:
   const lastVisitedDate = lastVisitedAt === undefined ? null : parseTimestampDate(lastVisitedAt);
   const wokeAtDate = props.wokeAt === null ? null : parseTimestampDate(props.wokeAt);
   const isWoke =
@@ -780,7 +783,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
     isActive: props.isActive,
     isSelected,
   });
-  const topStatus =
+  const threadTopStatus =
     status === "preparing" || status === "working"
       ? {
           label:
@@ -841,6 +844,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
                           className: "text-success-foreground",
                         }
                       : null;
+  const topStatus = pm?.topStatus ?? threadTopStatus; // t3code-pm:
   const isWokeStatus = topStatus?.icon === "woke";
 
   const branchMismatch = resolveLocalCheckoutBranchMismatch({
@@ -1270,8 +1274,9 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
     prBadge === null &&
     issueBadge === null &&
     diff === null &&
-    runningTerminalIds.length === 0;
-  const metaLine = metaLineEmpty ? null : (
+    runningTerminalIds.length === 0 &&
+    pm === null; // t3code-pm:
+  const threadMetaLine = metaLineEmpty ? null : (
     <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-secondary-label text-xs">
       {checkoutThread.branch ? (
         <>
@@ -1313,6 +1318,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
       </span>
     </div>
   );
+  const metaLine = pm?.meta ?? threadMetaLine; // t3code-pm:
   const titleLineIcons = metaLineEmpty ? (
     <span aria-hidden className="inline-flex shrink-0 items-center gap-1">
       {remoteMachineIcon}
@@ -1382,6 +1388,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
               )}
               {draftIndicator}
               {title}
+              {pm?.badge /* t3code-pm: */}
               {multiline ? titleLineIcons : null}
               {pinIndicator}
               {multiline ? null : terminalStatusIcon}
@@ -1587,6 +1594,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
               ) : (
                 <span className="flex-1" />
               )}
+              {pm?.badge /* t3code-pm: */}
               {sortable?.isDragging ? (
                 dragDestination
               ) : (

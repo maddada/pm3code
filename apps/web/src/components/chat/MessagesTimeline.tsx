@@ -144,6 +144,7 @@ import { useThreadFindPositionReader } from "./useThreadFindPositionReader";
 import { ThreadActivityAnnouncer } from "./ThreadActivityAnnouncer";
 import { useStableHandoffRuns, useIncrementalTimelineRows, useStableRows } from "./useTimelineRows";
 import { useClientSettings } from "../../hooks/useSettings";
+import { PmAnswersCard } from "../../pm/timeline"; // t3code-pm:
 
 function timelineListStateFor(identity: string): {
   readonly identity: string;
@@ -1697,7 +1698,10 @@ const TimelineRowContent = memo(function TimelineRowContent({ row }: { row: Time
       {row.kind === "turn-fold" ? <TurnFoldTimelineRow key={row.id} row={row} /> : null}
       {row.kind === "attempt-fold" ? <AttemptFoldTimelineRow row={row} /> : null}
       {row.kind === "context-compaction" ? <ContextCompactionTimelineRow row={row} /> : null}
-      {row.kind === "message" && row.message.role === "user" ? <UserMessageRow row={row} /> : null}
+      {row.kind === "message" && row.message.role === "user" ? (
+        // t3code-pm: a Live page's answers draw as a card; every other message is upstream's row.
+        <PmAnswersCard text={row.message.text} fallback={<UserMessageRow row={row} />} />
+      ) : null}
       {row.kind === "message" && row.message.role === "assistant" ? (
         <AssistantTimelineRow row={row} />
       ) : null}

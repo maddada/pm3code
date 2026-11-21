@@ -3,6 +3,7 @@ import type { SnoozePreset } from "@t3tools/client-runtime/state/thread-settled"
 import { msg } from "gt-react";
 
 import { m, type MessageResolver } from "../i18n/messages";
+import * as PmMenu from "../pm/threadMenu.logic"; // t3code-pm:
 
 export type ThreadActionMenuId =
   | "find"
@@ -30,7 +31,8 @@ export type ThreadActionMenuId =
   | "copy-thread"
   | "copy-thread-id"
   | "archive"
-  | "delete";
+  | "delete"
+  | PmMenu.PmThreadActionMenuId; // t3code-pm:
 
 export type DraftActionMenuId =
   | "copy"
@@ -123,6 +125,7 @@ export interface ThreadActionMenuState {
   readonly canShareWithGuest?: boolean;
   /** A No project thread with its own folder, on a server that can promote it. */
   readonly canTurnIntoProject?: boolean;
+  readonly pm?: PmMenu.PmThreadMenuState; // t3code-pm:
 }
 
 /** Local navigation, read markers, and copying remain available to read-only clients. */
@@ -145,7 +148,7 @@ export function buildThreadActionMenuItems(
   state: ThreadActionMenuState,
   resolve: MessageResolver = m,
 ): ReadonlyArray<ContextMenuItem<ThreadActionMenuId>> {
-  const items: ReadonlyArray<ContextMenuItem<ThreadActionMenuId>> = [
+  const items: ReadonlyArray<ContextMenuItem<ThreadActionMenuId>> = PmMenu.pmRelabel(state.pm, [
     ...(state.canFind
       ? [{ id: "find" as const, label: resolve(msg("Find in thread")), icon: "text-search" }]
       : []),
@@ -234,6 +237,7 @@ export function buildThreadActionMenuItems(
           },
         ]
       : []),
+    ...PmMenu.pmThreadMenuItems(state.pm, resolve), // t3code-pm:
     ...(state.canTurnIntoProject
       ? [
           {
@@ -307,7 +311,7 @@ export function buildThreadActionMenuItems(
       destructive: true,
       icon: "trash",
     },
-  ];
+  ]); // t3code-pm:
   return state.canOperate
     ? items
     : items.map((item) =>

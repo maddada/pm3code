@@ -1,12 +1,13 @@
 import { initializeGTSPA } from "gt-react";
 
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "./locales";
+import { loadPmTranslations } from "../pm/i18n/loadPmTranslations"; // t3code-pm:
 
 // English is the source text, so it never loads a chunk.
 async function loadTranslations(locale: string): Promise<unknown> {
   if (locale === DEFAULT_LOCALE) return {};
-  const module: { default: unknown } = await import(`./translations/${locale}.json`);
-  return module.default;
+  const module: { default: object } = await import(`./translations/${locale}.json`);
+  return { ...module.default, ...(await loadPmTranslations(locale)) }; // t3code-pm: own catalogs
 }
 
 /** Sets up GT's singletons. `onLocaleRequest` receives GT's own locale changes. */
