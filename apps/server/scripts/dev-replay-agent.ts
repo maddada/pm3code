@@ -9,6 +9,7 @@
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodeReadline from "node:readline";
+import { PM_MCP_CALL, playPmMcpCall, rememberPmMcpServer } from "./dev-replay-pm.ts"; // t3code-pm:
 
 interface LogicalFrame {
   readonly kind: "notification" | "request" | "response";
@@ -69,6 +70,7 @@ export const SCENARIOS = [
     name: "Command output",
     file: "./dev-replay/command_output_transcript.ndjson",
   },
+  { id: "pm", name: "Project manager", file: "./dev-replay/pm_transcript.ndjson" }, // t3code-pm:
 ] as const;
 
 // Session setup and vendor state stay out: they would replace the replay agent's own models.
@@ -86,6 +88,7 @@ const REPLAYED_UPDATES = new Set([
 
 // Only requests that ask the user. A replayed terminal/create would run a real command.
 const REPLAYED_REQUESTS = new Set(["session/request_permission", "elicitation/create"]);
+REPLAYED_REQUESTS.add(PM_MCP_CALL); // t3code-pm:
 
 const CHUNK_DELAY_MS = 30;
 const FRAME_DELAY_MS = 250;
@@ -225,6 +228,13 @@ function runAgent(): void {
     const live = { sessionId, workspace: session.cwd, turnKey: NodeCrypto.randomUUID() };
     for (const recorded of turn.frames) {
       const frame = materialize(recorded.frame, live) as LogicalFrame;
+      // t3code-pm: the agent calls the T3 tool itself instead of asking the client.
+      if (frame.kind === "request" && frame.method === PM_MCP_CALL) {
+        await sleep(recorded.afterMs ?? FRAME_DELAY_MS, signal);
+        if (signal.aborted) return;
+        await playPmMcpCall(sessionId, frame.params);
+        continue;
+      }
       if (frame.kind === "request") {
         await sleep(recorded.afterMs ?? FRAME_DELAY_MS, signal);
         if (signal.aborted) return;
@@ -297,6 +307,7 @@ function runAgent(): void {
           message.method === "session/load" ? String(params.sessionId) : NodeCrypto.randomUUID();
         const cwd = typeof params.cwd === "string" ? params.cwd : process.cwd();
         sessions.set(sessionId, { cwd, model: SCENARIOS[0].id, promptCount: 0, cancel: undefined });
+        rememberPmMcpServer(sessionId, params.mcpServers); // t3code-pm:
         return {
           ...(message.method === "session/new" ? { sessionId } : {}),
           models: {

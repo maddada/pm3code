@@ -60,6 +60,9 @@ import { EnvironmentToolkit } from "./toolkits/environment/tools.ts";
 import * as EnvironmentHandlers from "./toolkits/environment/handlers.ts";
 import { ThemeToolkit } from "./toolkits/theme/tools.ts";
 import * as ThemeHandlers from "./toolkits/theme/handlers.ts";
+import { PmToolkit } from "../pm/PmMcpTools.ts"; // t3code-pm:
+import * as PmMcpHandlers from "../pm/PmMcpHandlers.ts"; // t3code-pm:
+import * as PmLayer from "../pm/PmLayer.ts"; // t3code-pm:
 import { ProjectToolkit } from "./toolkits/project/tools.ts";
 import * as ProjectHandlers from "./toolkits/project/handlers.ts";
 import { AttachmentToolkit } from "./toolkits/attachment/tools.ts";
@@ -1469,4 +1472,11 @@ export const layerToolSearch = Layer.mergeAll(
   layerDeferredListing,
 ).pipe(Layer.provide(layerToolExposure));
 
-export const layer = layerMcpTransport(Layer.mergeAll(layerTools, layerToolSearch));
+// t3code-pm: PM tools sit outside layerTools, so its context budget stays upstream's.
+const layerPmToolkit = toolkitRegistration(PmToolkit, PmMcpHandlers.layer).pipe(
+  Layer.provide(PmLayer.layer),
+);
+
+export const layer = layerMcpTransport(
+  Layer.mergeAll(layerTools, layerToolSearch, layerPmToolkit), // t3code-pm:
+);

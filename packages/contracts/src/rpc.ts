@@ -93,6 +93,7 @@ import {
   EnvironmentAuthorizationError,
 } from "./auth.ts";
 import { ClientActivityReportInput } from "./background.ts";
+import { PmRpcGroup } from "./pm.ts"; // t3code-pm:
 import {
   FilesystemGetMetadataInput,
   FilesystemGetMetadataResult,
@@ -2618,4 +2619,6 @@ export const WsRpcGroup = RpcGroup.make(
   WsOrchestrationV2SubscribeThreadRpc,
   WsOrchestrationV2SubscribeCommandOutputRpc,
   WsOrchestrationV2SubscribePromptSuggestionRpc,
-).middleware(RpcScopeAuthorization);
+)
+  .merge(PmRpcGroup) // t3code-pm:
+  .middleware(RpcScopeAuthorization);

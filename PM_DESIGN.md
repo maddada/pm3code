@@ -1,6 +1,6 @@
 # t3code-pm: Project Manager threads, design
 
-Status: draft for approval. No feature code exists yet. Requirements and UI source of truth:
+Status: approved; open questions decided (section 13). Requirements and UI source of truth:
 the approved requirements page and the mockups `01-sidebar` to `07-mobile` (kept outside the repo,
 under `~/.local/share/agent-work/t3code/`). Line references are to `main` at `8cfd2b5211`.
 
@@ -140,7 +140,7 @@ There is no per-thread system prompt (section 3). `pm.create` dispatches one `me
 `createdBy: "agent"`, `creationSource: "server"`. Its text tells the model it is a Project Manager
 for the project, to call `pm_guide` now, and to reply with one line asking for the brief. This costs
 one short turn when the PM is created; the user's first real message then reaches a PM that has read
-its playbook. See question Q-B for the alternative.
+its playbook (decided, Q-B).
 
 Every `pm_*` tool result carries a short footer when something needs the PM's attention: the
 playbook version changed (call `pm_guide --changes`), asks dismissed since it last heard, and the
@@ -375,7 +375,7 @@ Each surface is its own row so a future cut removes one row and its component.
 | Thread row menu "New PM in <project>" (unified mode)     | `threadActionMenu.logic.ts:226-236` (next to Filter by project) plus a case in both handlers (`Sidebar.tsx:2717`, `apps/web/src/hooks/useThreadActionMenu.ts:198-343`).                                                                                                                                                                                 |
 | Command palette "New PM in <current>" and "New PM in..." | `CommandPalette.tsx:1346-1382`, reusing `buildNewThreadInProjectItems` (`CommandPaletteProjectItems.tsx:77-103`) with a PM prefix.                                                                                                                                                                                                                      |
 | Keybinding `mod+alt+m` (kept)                            | Command id in `packages/contracts/src/keybindings.ts:105-108`, default in `packages/shared/src/keybindings.ts:112-116`, label in `KeybindingsSettings.logic.ts:454-457`, handler registered with `registerCommands` (`apps/web/src/shortcuts/dispatcher.ts:131`) from one line next to `appInit.tsx:284`. `mod+alt+m` is unused in upstream's defaults. |
-| The create step                                          | No dialog: every entry point calls `pm.create` with the last model and opens the new PM. Its composer's model picker (upstream's) changes the model. The bootstrap reply asks for the brief. If the user wants a picker first, a small model-only popover is the fallback (Q-C).                                                                        |
+| The create step                                          | No dialog: every entry point calls `pm.create` with the last model and opens the new PM. Its composer's model picker (upstream's) changes the model. The bootstrap reply asks for the brief. (Decided, Q-C.)                                                                                                                                            |
 
 ### 7.3 PM thread view: dock above the composer
 
@@ -470,7 +470,7 @@ action buttons on either platform (`infra/relay/src/agentActivity/ApnsClient.ts:
 JS and native changes, and the fork APK cannot get hosted pushes anyway (section 9). v1 therefore
 relies on what exists: the PM ends its turn after asking, so the existing completion push and the
 desktop/web in-app notifications fire with the PM's reply (whose last section names the ask). Tapping
-opens the PM, where the dock answers it. Notification answer buttons are out of v1 (Q-D).
+opens the PM, where the dock answers it. Notification answer buttons are out of v1 (decided, Q-D).
 
 ### 7.12 Languages
 
@@ -686,16 +686,16 @@ Notification answer buttons, Live page drafts on the server, a real desktop chil
 Star and Import answers, `release`/`ota`/`rebuild` waits, hosted T3 Connect sign-in for fork apps,
 a per-thread system prompt.
 
-## 13. Open questions
+## 13. Decided questions
 
-- **Q-A, the goal's name.** "Mission" keeps it apart from upstream's `/goal`. Alternatives: "Brief",
-  "Objective". Recommended: Mission.
-- **Q-B, how the PM learns its role.** A setup turn on create (5.2.2, recommended: works with every
-  provider, costs one short turn), or prepend the role to the user's first message (touches
-  upstream's send path).
-- **Q-C, New PM with no dialog.** Create at once with the last model and change the model in the
-  composer (recommended), or a model-only popover first.
-- **Q-D, notification answer buttons.** Leave out of v1 (recommended); they need relay, mobile JS
-  and native changes and a self-hosted relay for the fork APK.
-- **Q-E, fork default home.** `~/.t3-pm` for desktop and CLI (recommended), or share `~/.t3` with
-  the official app (never at the same time; the official app could later be confused by fork data).
+Decided on 2026-11-21 with the recommendations below (the user chose not to wait on them).
+
+- **Q-A, the goal's name: Mission.** `pm_threads.mission`, `pm_set_mission`, UI label "Mission",
+  kept apart from upstream's `/goal`.
+- **Q-B, how the PM learns its role: a setup turn on create** (5.2.2). The PM reads its playbook
+  and asks for the brief. No change to upstream's send path.
+- **Q-C, New PM shows no dialog.** It creates the PM at once with the last model; the composer's
+  model picker changes it.
+- **Q-D, notification answer buttons: left out of v1.**
+- **Q-E, fork default home: `~/.t3-pm`** for the fork desktop app and CLI. Users can copy in
+  `statev2.sqlite` to try it on real data.

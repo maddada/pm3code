@@ -1,0 +1,24 @@
+{"type": "transcript_start", "provider": "acpRegistry", "protocol": "acp.ndjson-jsonrpc", "version": "1", "scenario": "dev_replay_pm", "metadata": {"generatedBy": "hand-written for the dev replay agent (t3code-pm)"}}
+{"type": "expect_outbound", "frame": {"kind": "request", "method": "session/prompt", "params": "<any>"}}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_guide", "arguments": {}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "notification", "method": "session/update", "params": {"sessionId": "dev-replay-session", "update": {"sessionUpdate": "agent_message_chunk", "content": {"type": "text", "text": "Ready. What should I manage? Send me the brief."}}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "response", "method": "session/prompt", "result": {"stopReason": "end_turn"}}}
+{"type": "expect_outbound", "frame": {"kind": "request", "method": "session/prompt", "params": "<any>"}}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_status", "arguments": {}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_set_name", "arguments": {"name": "Release notes"}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_set_mission", "arguments": {"mission": "Get the next release's notes drafted and published."}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_item_add", "arguments": {"title": "Release notes draft"}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_worker_start", "arguments": {"title": "Draft release notes", "brief": "Draft the release notes for the next version from the commits since the last tag. Report the draft in your final message.", "item": "W1", "modelSelection": {"instanceId": "devReplay", "model": "multi-turn"}}}}, "afterMs": 600}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_item_update", "arguments": {"item": "W1", "now": "A worker is drafting the notes"}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_ask", "arguments": {"item": "W1", "title": "Publish the release notes on the blog too?", "detail": "The worker can post them once the draft is done.", "answers": "Yes*,No"}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "notification", "method": "session/update", "params": {"sessionId": "dev-replay-session", "update": {"sessionUpdate": "agent_message_chunk", "content": {"type": "text", "text": "🛫 **Kicked off:**\n- Draft release notes, on W1."}}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "response", "method": "session/prompt", "result": {"stopReason": "end_turn"}}}
+{"type": "expect_outbound", "frame": {"kind": "request", "method": "session/prompt", "params": "<any>"}}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_status", "arguments": {}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_item_update", "arguments": {"item": "W1", "now": "Reviewing the worker's draft"}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "notification", "method": "session/update", "params": {"sessionId": "dev-replay-session", "update": {"sessionUpdate": "agent_message_chunk", "content": {"type": "text", "text": "✅ **Done:**\n- Draft release notes reported its draft."}}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "response", "method": "session/prompt", "result": {"stopReason": "end_turn"}}}
+{"type": "expect_outbound", "frame": {"kind": "request", "method": "session/prompt", "params": "<any>"}}
+{"type": "emit_inbound", "frame": {"kind": "request", "method": "t3/mcp_call", "params": {"name": "pm_item_update", "arguments": {"item": "W1", "status": "done", "done": "Release notes drafted; blog post approved."}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "notification", "method": "session/update", "params": {"sessionId": "dev-replay-session", "update": {"sessionUpdate": "agent_message_chunk", "content": {"type": "text", "text": "✅ **Done:**\n- W1 is done."}}}}, "afterMs": 300}
+{"type": "emit_inbound", "frame": {"kind": "response", "method": "session/prompt", "result": {"stopReason": "end_turn"}}}
